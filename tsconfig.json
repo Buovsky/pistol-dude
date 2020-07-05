@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "CommonJS",
+        "target": "ES5",
+        "lib": ["es6", "dom"],
+        "allowSyntheticDefaultImports": true,
+        "downlevelIteration": true
+    }
+}

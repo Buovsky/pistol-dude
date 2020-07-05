@@ -1,0 +1,23 @@
+{
+  "name": "pistol-dude",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --open --config webpack.development.config.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/pixi.js": "^5.0.0",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "pixi.js": "^5.3.0"
+  }
+}
