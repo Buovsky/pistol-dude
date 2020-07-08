@@ -13,6 +13,8 @@ const loader = new PIXI.Loader();
 
 loader.load(setup);
 
+
+
 function setup() 
 {
     //const app.stage = new PIXI.Container();
@@ -43,7 +45,6 @@ function setup()
     app.stage.addChild(zombie);
     console.log("Zombie:",zombie.width, zombie.height);
 
-
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
     const playerUp = PIXI.Texture.from('assets/playerUp.png');
     const playerRight = PIXI.Texture.from('assets/playerRight.png');
@@ -60,6 +61,24 @@ function setup()
     //Capture the keyboard arrow keys
 
     window.addEventListener('keydown', keyboardInput);
+    function keyboardInput(event: KeyboardEvent)
+{
+    if(event.keyCode == 37)
+    {
+        console.log("Left Arrow pressed!");
+        player.texture = playerLeft;
+    }
+    if(event.keyCode == 38)
+    {
+        console.log("Up Arrow pressed!");
+        player.texture = playerUp;
+    }
+    if(event.keyCode == 39)
+    {
+        console.log("Right Arrow pressed!");
+        player.texture = playerRight;
+    }
+}
 
     var seconds = 0;
     app.ticker.add((delta) => {
@@ -83,22 +102,25 @@ function setup()
     });
 }
 
-function keyboardInput(event: KeyboardEvent)
+/*function keyboardInput(event: KeyboardEvent)
 {
     if(event.keyCode == 37)
     {
         console.log("Left Arrow pressed!");
+        player.texture = playerLeft;
     }
     if(event.keyCode == 38)
     {
         console.log("Up Arrow pressed!");
+        player.texture = playerUp;
     }
     if(event.keyCode == 39)
     {
         console.log("Right Arrow pressed!");
+        player.texture = playerRight;
     }
 
-}
+}*/
 
 /*function gameLoop(delta)
 {
