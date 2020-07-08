@@ -18,17 +18,14 @@ function setup()
     //const app.stage = new PIXI.Container();
     //app.stage.addChild(app.stage);
 
-
-    
-    //app.stage.height = 480;
-
     //const gameOverScene = new PIXI.Container();
     //app.stage.addChild(gameOverScene);
 
     //gameOverScene.visible = false;
     
+    
     console.log("setup");
-
+    
     const backgroundTexture = PIXI.Texture.from('assets/background.png');
     const background = PIXI.Sprite.from(backgroundTexture);
     app.stage.addChild(background);
@@ -60,11 +57,55 @@ function setup()
 
     app.stage.addChild(player);
 
+    //Capture the keyboard arrow keys
+
+    window.addEventListener('keydown', keyboardInput);
+
+    var seconds = 0;
     app.ticker.add((delta) => {
+        seconds += delta/50;
+
+        //console.log(seconds);
+        
+        if(seconds >= 0.5)
+        {
+            zombie.texture = zombie2;
+            seconds = 0;
+        }
+        else
+        {
+            zombie.texture = zombie1;
+        }
+
         zombie.x--;
+
+        keyboardInput;
     });
 }
 
+function keyboardInput(event: KeyboardEvent)
+{
+    if(event.keyCode == 37)
+    {
+        console.log("Left Arrow pressed!");
+    }
+    if(event.keyCode == 38)
+    {
+        console.log("Up Arrow pressed!");
+    }
+    if(event.keyCode == 39)
+    {
+        console.log("Right Arrow pressed!");
+    }
+
+}
+
+/*function gameLoop(delta)
+{
+    app.ticker.add((delta) => {
+        zombie;
+    });
+}*/
 
 
 
