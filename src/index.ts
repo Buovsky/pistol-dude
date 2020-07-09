@@ -35,13 +35,23 @@ function setup()
 
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
-    const zombie = PIXI.Sprite.from(zombie1);
+    var zombie = PIXI.Sprite.from(zombie1);
     zombie.scale.x = 0.3;
     zombie.scale.y = 0.3;
     zombie.position.set(100,50);
     zombie.anchor.set(0.5);
-    zombie.position.set(app.view.width,app.view.height/2+170);
+    zombie.position.set(app.view.width - 100,app.view.height/2+170);
     app.stage.addChild(zombie);
+
+    const zombie3 = PIXI.Sprite.from(zombie1);
+    zombie3.scale.x = 0.3;
+    zombie3.scale.y = 0.3;
+    zombie3.position.set(100,50);
+    zombie3.anchor.set(0.5);
+    zombie3.position.set(app.view.width,app.view.height/2+170);
+    app.stage.addChild(zombie3);
+
+    var zombieDead = false;
 
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
     const playerUp = PIXI.Texture.from('assets/playerUp.png');
@@ -53,6 +63,8 @@ function setup()
     player.anchor.set(0.5);
     app.stage.addChild(player);
 
+    var playerAlive = true;
+
     const bulletTexture = PIXI.Texture.from("assets/bullet.png");
     
     const bulletSpeed = 4;
@@ -62,10 +74,9 @@ function setup()
     var bulletsRight = [];
 
     // Keyboard variables
-    var left = false;
+    var left = true;
     var up = false;
     var right = false;
-    var space = false;
 
     window.addEventListener('keydown', keyboardInput);
     
@@ -79,7 +90,7 @@ function setup()
 
             updateBullets();
             
-            if(seconds >= 0.5)
+            /*if(seconds >= 0.5)
             {
                 zombie.texture = zombie2;
                 seconds = 0;
@@ -88,10 +99,25 @@ function setup()
             {
                 zombie.texture = zombie1;
             }
+            */
 
-            zombie.x--;
+            if(playerAlive)
+            {
+                keyboardInput;
 
-            keyboardInput;
+                if(rectsIntersect(player, zombie))
+                {
+                    app.stage.removeChild(player);
+                    playerAlive = false;
+                }
+                
+                zombie.x--;
+            }
+            else
+            {
+
+            }
+            
         });
     }
     
@@ -180,6 +206,15 @@ function setup()
             {
                 bulletsRight[i].position.x += bulletSpeed;
 
+                if(!zombieDead)
+                {
+                    if(rectsIntersect(bulletsRight[i], zombie))
+                    {
+                        zombie.position.set(zombie.x,zombie.y+1000)
+                        app.stage.removeChild(zombie);
+                        app.stage.removeChild(bulletsRight[i]);
+                    }
+                }
                 if(bulletsRight[i].position.x > 854)
                 {
 
@@ -188,6 +223,26 @@ function setup()
             }
         }
         
+    }
+
+    //Collision detection
+
+    function rectsIntersect(a,b)
+    {
+        const aBox = a.getBounds();
+        const bBox = b.getBounds();
+
+        if(a.getBounds == null || b.getBounds  == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return aBox.x + aBox.width > bBox.x &&
+               aBox.x < bBox.x + bBox.width &&
+               aBox.y + aBox.height > bBox.y &&
+               aBox.y < bBox.y + bBox.height;
+        }
     }
 
     //Capture the keyboard arrow keys
@@ -211,7 +266,7 @@ function setup()
             left = false;
             right = false;
             player.texture = playerUp;
-            console.log(left);
+            console.log(up);
 
         }
         if(event.keyCode == 39)
@@ -221,7 +276,7 @@ function setup()
             left = false;
             up = false;
             player.texture = playerRight;
-            console.log(left);
+            console.log(right);
 
         }
         if(event.keyCode == 32)
@@ -229,17 +284,9 @@ function setup()
             console.log("Space pressed!");
             fireBullet();
         }
-
-        
-        // if(space && left)
-        // {
-        //    /* console.log("PIFF PAFF")
-        //     bullet.position.set(app.view.width/2-27,app.view.height/2+159);
-        //     app.stage.addChild(bullet);*/
-        //     space = false;
-        //     fireBullet();
-        // }
     }
+
+    
 }
 
 /*function gameLoop(delta)
