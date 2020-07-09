@@ -35,7 +35,6 @@ function setup()
 
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
-    
     const zombie = PIXI.Sprite.from(zombie1);
     zombie.scale.x = 0.3;
     zombie.scale.y = 0.3;
@@ -43,7 +42,6 @@ function setup()
     zombie.anchor.set(0.5);
     zombie.position.set(app.view.width,app.view.height/2+170);
     app.stage.addChild(zombie);
-    console.log("Zombie:",zombie.width, zombie.height);
 
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
     const playerUp = PIXI.Texture.from('assets/playerUp.png');
@@ -53,74 +51,196 @@ function setup()
     player.scale.y = 0.3;
     player.position.set(app.view.width/2,app.view.height/2+170);
     player.anchor.set(0.5);
-    
-    console.log(player.position);
-
     app.stage.addChild(player);
+
+    const bulletTexture = PIXI.Texture.from("assets/bullet.png");
+    
+    const bulletSpeed = 4;
+
+    var bulletsLeft = [];
+    var bulletsUp = [];
+    var bulletsRight = [];
+
+    // Keyboard variables
+    var left = false;
+    var up = false;
+    var right = false;
+    var space = false;
+
+    window.addEventListener('keydown', keyboardInput);
+    
+    gameLoop();
+    
+    function gameLoop()
+    {
+        var seconds = 0;
+        app.ticker.add((delta) => {
+            seconds += delta/50;
+
+            updateBullets();
+            
+            if(seconds >= 0.5)
+            {
+                zombie.texture = zombie2;
+                seconds = 0;
+            }
+            else
+            {
+                zombie.texture = zombie1;
+            }
+
+            zombie.x--;
+
+            keyboardInput;
+        });
+    }
+    
+    //Bullet functionality 
+
+    function fireBullet()
+    {
+        console.log("FIRE!");
+        const bullet = createBullet();
+        if(left)
+        {
+            bulletsLeft.push(bullet);
+        }
+        if(up)
+        {
+            bulletsUp.push(bullet);
+        }
+        if(right)
+        {
+            bulletsRight.push(bullet);
+        }
+    }
+
+    function createBullet()
+    {
+        const bullet = PIXI.Sprite.from(bulletTexture);
+        bullet.anchor.set(0.5);
+        if(left)
+        {
+            bullet.x = player.x - 27;
+            bullet.y = player.y - 11;
+
+            app.stage.addChild(bullet);
+        }
+        if(up)
+        {
+            bullet.x = player.x;
+            bullet.y = player.y -  40;
+            bullet.angle = 90;
+
+            app.stage.addChild(bullet);
+        }
+        if(right)
+        {
+            bullet.x = player.x + 27;
+            bullet.y = player.y - 11;
+
+            app.stage.addChild(bullet);
+        }
+        console.log("Bullets Left: ", bulletsLeft.length);
+        console.log("Bullets UP: ", bulletsUp.length);
+        
+
+        return bullet;
+    }
+
+    function updateBullets()
+    {
+        if(bulletsLeft.length >= 1)
+        {
+            for (var i = 0; i < bulletsLeft.length; i++)
+            {
+                bulletsLeft[i].position.x -= bulletSpeed;
+
+                if(bulletsLeft[i].position.x < 0)
+                {
+                    app.stage.removeChild(bulletsLeft[i]);
+                }
+            }
+        }
+        if(bulletsUp.length >= 1)
+        {
+            for (var i = 0; i < bulletsUp.length; i++)
+            {
+                bulletsUp[i].position.y -= bulletSpeed;
+
+                if(bulletsUp[i].position.y < 0)
+                {;
+                    app.stage.removeChild(bulletsUp[i]);
+                }
+            }
+        }
+        if(bulletsRight.length >= 1)
+        {
+            for (var i = 0; i < bulletsRight.length; i++)
+            {
+                bulletsRight[i].position.x += bulletSpeed;
+
+                if(bulletsRight[i].position.x > 854)
+                {
+
+                    app.stage.removeChild(bulletsRight[i]);
+                }
+            }
+        }
+        
+    }
 
     //Capture the keyboard arrow keys
 
-    window.addEventListener('keydown', keyboardInput);
     function keyboardInput(event: KeyboardEvent)
-{
-    if(event.keyCode == 37)
     {
-        console.log("Left Arrow pressed!");
-        player.texture = playerLeft;
-    }
-    if(event.keyCode == 38)
-    {
-        console.log("Up Arrow pressed!");
-        player.texture = playerUp;
-    }
-    if(event.keyCode == 39)
-    {
-        console.log("Right Arrow pressed!");
-        player.texture = playerRight;
-    }
-}
 
-    var seconds = 0;
-    app.ticker.add((delta) => {
-        seconds += delta/50;
+        if(event.keyCode == 37)
+        {
+            console.log("Left Arrow pressed!");
+            left = true;
+            up = false;
+            right = false;
+            player.texture = playerLeft;
+            console.log(left);
+        }
+        if(event.keyCode == 38)
+        {
+            console.log("Up Arrow pressed!");
+            up = true
+            left = false;
+            right = false;
+            player.texture = playerUp;
+            console.log(left);
 
-        //console.log(seconds);
+        }
+        if(event.keyCode == 39)
+        {
+            console.log("Right Arrow pressed!");
+            right = true;
+            left = false;
+            up = false;
+            player.texture = playerRight;
+            console.log(left);
+
+        }
+        if(event.keyCode == 32)
+        {
+            console.log("Space pressed!");
+            fireBullet();
+        }
+
         
-        if(seconds >= 0.5)
-        {
-            zombie.texture = zombie2;
-            seconds = 0;
-        }
-        else
-        {
-            zombie.texture = zombie1;
-        }
-
-        zombie.x--;
-
-        keyboardInput;
-    });
+        // if(space && left)
+        // {
+        //    /* console.log("PIFF PAFF")
+        //     bullet.position.set(app.view.width/2-27,app.view.height/2+159);
+        //     app.stage.addChild(bullet);*/
+        //     space = false;
+        //     fireBullet();
+        // }
+    }
 }
-
-/*function keyboardInput(event: KeyboardEvent)
-{
-    if(event.keyCode == 37)
-    {
-        console.log("Left Arrow pressed!");
-        player.texture = playerLeft;
-    }
-    if(event.keyCode == 38)
-    {
-        console.log("Up Arrow pressed!");
-        player.texture = playerUp;
-    }
-    if(event.keyCode == 39)
-    {
-        console.log("Right Arrow pressed!");
-        player.texture = playerRight;
-    }
-
-}*/
 
 /*function gameLoop(delta)
 {
