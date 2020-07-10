@@ -35,10 +35,9 @@ function setup()
 
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
-    var zombie = PIXI.Sprite.from(zombie1);
+    /* zombie = PIXI.Sprite.from(zombie1);
     zombie.scale.x = 0.3;
     zombie.scale.y = 0.3;
-    zombie.position.set(100,50);
     zombie.anchor.set(0.5);
     zombie.position.set(app.view.width - 100,app.view.height/2+170);
     app.stage.addChild(zombie);
@@ -49,8 +48,10 @@ function setup()
     zombie3.position.set(100,50);
     zombie3.anchor.set(0.5);
     zombie3.position.set(app.view.width,app.view.height/2+170);
-    app.stage.addChild(zombie3);
+    app.stage.addChild(zombie3);*/
 
+    var enemies = [];
+    var enemiesRight = [];
     var zombieDead = false;
 
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
@@ -90,43 +91,94 @@ function setup()
 
             updateBullets();
             
-            /*if(seconds >= 0.5)
+            if(seconds >= 2)
             {
-                zombie.texture = zombie2;
+                //zombie.texture = zombie2;
                 seconds = 0;
+                spawnZombie();
             }
             else
             {
-                zombie.texture = zombie1;
+                //zombie.texture = zombie1;
             }
-            */
+            
 
             if(playerAlive)
             {
+                updateZombies();
                 keyboardInput;
-
-                if(rectsIntersect(player, zombie))
+                
+                for (var j = 0; j < enemies.length; j++)
                 {
-                    app.stage.removeChild(player);
-                    playerAlive = false;
+                    if(rectsIntersect(player, enemies[j]))
+                    {
+                        app.stage.removeChild(player);
+                        playerAlive = false;
+                    }
                 }
                 
-                zombie.x--;
             }
             else
             {
-
+                
             }
             
         });
     }
     
+    function spawnZombie()
+    {
+        if(enemies.length <= 4)
+        {
+            console.log("SPAWN");
+            var enemy = createZombie();
+            enemies.push(enemy);
+        }
+    }
+    function createZombie()
+    {
+        var enemy = PIXI.Sprite.from(zombie1);
+        enemy.anchor.set(0.5);
+        enemy.scale.x = 0.3;
+        enemy.scale.y = 0.3;
+
+        var random = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
+
+        if(random == 1)
+        {
+            enemy.position.set(-30, player.y);
+            app.stage.addChild(enemy);
+        }
+        else
+        {
+            enemy.position.set(884, player.y);
+            app.stage.addChild(enemy);
+        }
+
+        return enemy;
+    }
+
+    function updateZombies()
+    {
+        for(var i = 0; i < enemies.length; i++)
+        {
+            if(enemies[i].x < player.x)
+            {
+                enemies[i].x++;
+            }
+            else
+            {
+                enemies[i].x--;
+            }
+        }
+    }
+
     //Bullet functionality 
 
     function fireBullet()
     {
         console.log("FIRE!");
-        const bullet = createBullet();
+        var bullet = createBullet();
         if(left)
         {
             bulletsLeft.push(bullet);
@@ -182,9 +234,22 @@ function setup()
             {
                 bulletsLeft[i].position.x -= bulletSpeed;
 
+                for (var j = 0; j < enemies.length; j++)
+                {
+                    if(rectsIntersect(bulletsLeft[i], enemies[j]))
+                    {
+                        enemies[j].position.set(enemies[j].x,enemies[j].y+1000)
+                        app.stage.removeChild(enemies[j]);
+                        enemies.splice(j,1);
+                        app.stage.removeChild(bulletsLeft[i]);
+                        bulletsLeft[i].position.set(bulletsLeft[i].x , bulletsLeft[i].y+1000);
+                    }
+                }
+
                 if(bulletsLeft[i].position.x < 0)
                 {
                     app.stage.removeChild(bulletsLeft[i]);
+                    bulletsLeft.splice(i,1);
                 }
             }
         }
@@ -197,6 +262,7 @@ function setup()
                 if(bulletsUp[i].position.y < 0)
                 {;
                     app.stage.removeChild(bulletsUp[i]);
+                    bulletsUp.splice(i,1);
                 }
             }
         }
@@ -205,21 +271,23 @@ function setup()
             for (var i = 0; i < bulletsRight.length; i++)
             {
                 bulletsRight[i].position.x += bulletSpeed;
-
-                if(!zombieDead)
+                
+                for (var j = 0; j < enemies.length; j++)
                 {
-                    if(rectsIntersect(bulletsRight[i], zombie))
+                    if(rectsIntersect(bulletsRight[i], enemies[j]))
                     {
-                        zombie.position.set(zombie.x,zombie.y+1000)
-                        app.stage.removeChild(zombie);
+                        enemies[j].position.set(enemies[j].x,enemies[j].y+1000)
+                        app.stage.removeChild(enemies[j]);
+                        enemies.splice(j,1);
                         app.stage.removeChild(bulletsRight[i]);
+                        bulletsRight[i].position.set(bulletsRight[i].x , bulletsRight[i].y+1000);
                     }
                 }
                 if(bulletsRight[i].position.x > 854)
                 {
-
                     app.stage.removeChild(bulletsRight[i]);
-                }
+                    bulletsRight.splice(i,1);
+                 }
             }
         }
         
@@ -249,41 +317,44 @@ function setup()
 
     function keyboardInput(event: KeyboardEvent)
     {
+        if(playerAlive)
+        {
+            if(event.keyCode == 37)
+            {
+                console.log("Left Arrow pressed!");
+                left = true;
+                up = false;
+                right = false;
+                player.texture = playerLeft;
+                console.log(left);
+            }
+            if(event.keyCode == 38)
+            {
+                console.log("Up Arrow pressed!");
+                up = true
+                left = false;
+                right = false;
+                player.texture = playerUp;
+                console.log(up);
+    
+            }
+            if(event.keyCode == 39)
+            {
+                console.log("Right Arrow pressed!");
+                right = true;
+                left = false;
+                up = false;
+                player.texture = playerRight;
+                console.log(right);
+    
+            }
+            if(event.keyCode == 32)
+            {
+                console.log("Space pressed!");
+                fireBullet();
+            }
+        }
 
-        if(event.keyCode == 37)
-        {
-            console.log("Left Arrow pressed!");
-            left = true;
-            up = false;
-            right = false;
-            player.texture = playerLeft;
-            console.log(left);
-        }
-        if(event.keyCode == 38)
-        {
-            console.log("Up Arrow pressed!");
-            up = true
-            left = false;
-            right = false;
-            player.texture = playerUp;
-            console.log(up);
-
-        }
-        if(event.keyCode == 39)
-        {
-            console.log("Right Arrow pressed!");
-            right = true;
-            left = false;
-            up = false;
-            player.texture = playerRight;
-            console.log(right);
-
-        }
-        if(event.keyCode == 32)
-        {
-            console.log("Space pressed!");
-            fireBullet();
-        }
     }
 
     
