@@ -6,21 +6,33 @@
     <title>Document</title>
 
     <style>
+        @font-face {
+            font-family: 'Ardcade';
+            src: url('assets/ARCADECLASSIC.TTF');
+        }
         body 
         {
+            font-family: "Ardcade";
+            font-size: 30;
             display: flex;
             justify-content: center; /* center horizontally */
             align-items: center; /* center vertically */
+        }
+        #fontCache
+        {
+            font-family: "Ardcade";
+            font-size: 0px;
         }
     </style>
 
 </head>
 <body>
-    
+    <div id="fontCache">1</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.0/pixi.min.js"></script>
     <div>
         <script src="main.js"></script>
     </div>
+    
     
 </body>
 </html>

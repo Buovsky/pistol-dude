@@ -53,7 +53,7 @@ function setup()
     var playerAlive = true;
 
     const bulletTexture = PIXI.Texture.from("assets/bullet.png");
-    
+    var bulletsNumber = 10;
     const bulletSpeed = 4;
 
     var bulletsLeft = [];
@@ -65,8 +65,13 @@ function setup()
     var up = false;
     var right = false;
 
+    var scorePoints = 0;
+
     window.addEventListener('keydown', keyboardInput);
-    
+
+    var addScore = new PIXI.Text(scorePoints.toString());
+    var removeBullet = new PIXI.Text(bulletsNumber.toString());
+    drawUI();
     gameLoop();
     
     function gameLoop()
@@ -86,6 +91,7 @@ function setup()
             if(seconds > 2)
             {
                 seconds = 0;
+                console.log(scorePoints); 
             }
             
 
@@ -110,7 +116,66 @@ function setup()
             
         });
     }
-    
+
+    function drawUI()
+    {
+        var score = new PIXI.Text("SCORE: ");
+        score.position.set(80,30);
+        score.anchor.set(0.5);
+        score.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontFamily: "Ardcade",
+            fontSize:35,
+            strokeThickness: 5,
+            letterSpacing: 2
+            
+        });
+        app.stage.addChild(score);
+
+        addScore.position.set(160,30);
+        addScore.anchor.set(0.5);
+        addScore.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontFamily: "Ardcade",
+            fontSize:35,
+            strokeThickness: 5,
+            letterSpacing: 2
+        });
+        app.stage.addChild(addScore);
+        
+        var bulletAmount = new PIXI.Text("BULLETS: ");
+        bulletAmount.position.set(705,30);
+        bulletAmount.anchor.set(0.5);
+        bulletAmount.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontFamily: "Ardcade",
+            fontSize:35,
+            strokeThickness: 5,
+            letterSpacing: 1
+        });
+        app.stage.addChild(bulletAmount);
+        removeBullet.position.set(810,30);
+        removeBullet.anchor.set(0.5);
+        removeBullet.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontFamily: "Ardcade",
+            fontSize:35,
+            strokeThickness: 5,
+            letterSpacing: 1
+        });
+        app.stage.addChild(removeBullet);
+    }
+    function scorePosition()
+    {
+        if(scorePoints >= 100)
+        {
+            addScore.x = 170;
+        }
+        if(scorePoints >= 1000)
+        {
+            addScore.x = 180;
+        }
+    }
     function spawnZombie()
     {
         if(enemies.length <= 1)
@@ -170,19 +235,24 @@ function setup()
 
     function fireBullet()
     {
-        console.log("FIRE!");
-        var bullet = createBullet();
-        if(left)
+        if(bulletsNumber > 0)
         {
-            bulletsLeft.push(bullet);
-        }
-        if(up)
-        {
-            bulletsUp.push(bullet);
-        }
-        if(right)
-        {
-            bulletsRight.push(bullet);
+            console.log("FIRE!");
+            var bullet = createBullet();
+            if(left)
+            {
+                bulletsLeft.push(bullet);
+            }
+            if(up)
+            {
+                bulletsUp.push(bullet);
+            }
+            if(right)
+            {
+                bulletsRight.push(bullet);
+            }
+            bulletsNumber--;
+            removeBullet.text = bulletsNumber.toString();
         }
     }
 
@@ -236,6 +306,9 @@ function setup()
                         enemies.splice(j,1);
                         app.stage.removeChild(bulletsLeft[i]);
                         bulletsLeft[i].position.set(bulletsLeft[i].x , bulletsLeft[i].y+1000);
+                        scorePoints += 10;
+                        addScore.text = scorePoints.toString();
+                        scorePosition();
                     }
                 }
 
@@ -274,6 +347,9 @@ function setup()
                         enemies.splice(j,1);
                         app.stage.removeChild(bulletsRight[i]);
                         bulletsRight[i].position.set(bulletsRight[i].x , bulletsRight[i].y+1000);
+                        scorePoints += 10;
+                        addScore.text = scorePoints.toString();
+                        scorePosition();
                     }
                 }
                 if(bulletsRight[i].position.x > 854)
