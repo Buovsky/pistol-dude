@@ -81,6 +81,7 @@ function setup()
         var seconds = 0;
         var spawnerSeconds = 0;
         var spawnerCrateSeconds = 0;
+        var timeToSpawnCrate = 15;
         app.ticker.add((delta) => {
             seconds += delta/50;
             spawnerSeconds += delta/50;
@@ -97,9 +98,13 @@ function setup()
                 seconds = 0;
                 
             }
-            if(spawnerCrateSeconds > 15)
+            if(spawnerCrateSeconds > timeToSpawnCrate)
             {
                 createCrate();
+                if(scorePoints > 100)
+                {
+                    timeToSpawnCrate = 6;
+                }
                 spawnerCrateSeconds = 0;
             }
             
@@ -194,7 +199,16 @@ function setup()
 
     function spawnZombie()
     {
-        if(enemies.length <= 1)
+        var enemyNumber = 1;
+        if(scorePoints > 100)
+        {
+            enemyNumber = 3;
+        }
+        if(scorePoints > 300)
+        {
+            enemyNumber = 5;
+        }
+        if(enemies.length <= enemyNumber)
         {
             console.log("SPAWN");
             var enemy = createZombie();
@@ -278,13 +292,7 @@ function setup()
                 app.stage.removeChild(crates[0]);
                 crates.splice(0,1);
             }
-
-            
         }
-        console.log(crates.length)
-
-        
-        
     }
 
 
@@ -380,7 +388,6 @@ function setup()
             for (var i = 0; i < bulletsUp.length; i++)
             {
                 bulletsUp[i].position.y -= bulletSpeed;
-                console.log(bulletsUp[i].y);  
                 if(crates[0])
                 {
                     if(rectsIntersect(bulletsUp[i],crates[0]))
@@ -404,7 +411,6 @@ function setup()
                     }
                     
                 }
-                
                 
             }
         }
