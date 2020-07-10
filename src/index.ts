@@ -37,8 +37,10 @@ function setup()
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
 
     var enemies = [];
-    var enemiesRight = [];
-    var zombieDead = false;
+
+    const crateTexture = PIXI.Texture.from('assets/crate.png');
+    var crates = [];
+    const crateSpeed = 1;
 
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
     const playerUp = PIXI.Texture.from('assets/playerUp.png');
@@ -78,9 +80,11 @@ function setup()
     {
         var seconds = 0;
         var spawnerSeconds = 0;
+        var spawnerCrateSeconds = 0;
         app.ticker.add((delta) => {
             seconds += delta/50;
             spawnerSeconds += delta/50;
+            spawnerCrateSeconds += delta/50;
 
             updateBullets();
             if(spawnerSeconds > 1)
@@ -91,13 +95,20 @@ function setup()
             if(seconds > 2)
             {
                 seconds = 0;
-                console.log(scorePoints); 
+                
+            }
+            if(spawnerCrateSeconds > 15)
+            {
+                createCrate();
+                spawnerCrateSeconds = 0;
             }
             
 
             if(playerAlive)
             {
+                
                 updateZombies(seconds);
+                updateCrate(seconds);
                 keyboardInput;
                 
                 for (var j = 0; j < enemies.length; j++)
@@ -116,6 +127,8 @@ function setup()
             
         });
     }
+
+    // Drawing UI
 
     function drawUI()
     {
@@ -176,6 +189,9 @@ function setup()
             addScore.x = 180;
         }
     }
+
+    // Spawning enemies
+
     function spawnZombie()
     {
         if(enemies.length <= 1)
@@ -231,6 +247,47 @@ function setup()
         }
     }
 
+    function createCrate()
+    {
+        console.log("Crate Spawned");
+
+        var crate = PIXI.Sprite.from(crateTexture);
+        crate.anchor.set(0.5);
+        crate.position.set(-30, player.y - 300);
+        crate.scale.x = 0.8;
+        crate.scale.y = 0.8;
+        app.stage.addChild(crate);
+        crates.push(crate);
+    } 
+    function updateCrate(seconds)
+    {
+        if(crates[0])
+        {
+            if(seconds <= 2 && seconds >= 1)
+            {
+                crates[0].x += crateSpeed;
+                crates[0].y -= crateSpeed;
+            }
+            if(seconds <= 1)
+            { 
+                crates[0].x += crateSpeed;
+                crates[0].y += crateSpeed;
+            }
+            if(crates[0].position.x > 854)
+            {
+                app.stage.removeChild(crates[0]);
+                crates.splice(0,1);
+            }
+
+            
+        }
+        console.log(crates.length)
+
+        
+        
+    }
+
+
     //Bullet functionality 
 
     function fireBullet()
@@ -285,7 +342,6 @@ function setup()
         console.log("Bullets Left: ", bulletsLeft.length);
         console.log("Bullets UP: ", bulletsUp.length);
         
-
         return bullet;
     }
 
@@ -324,12 +380,32 @@ function setup()
             for (var i = 0; i < bulletsUp.length; i++)
             {
                 bulletsUp[i].position.y -= bulletSpeed;
-
-                if(bulletsUp[i].position.y < 0)
-                {;
-                    app.stage.removeChild(bulletsUp[i]);
-                    bulletsUp.splice(i,1);
+                console.log(bulletsUp[i].y);  
+                if(crates[0])
+                {
+                    if(rectsIntersect(bulletsUp[i],crates[0]))
+                    {
+                        crates[0].position.set(crates[0].x,crates[0].y+1000);
+                        app.stage.removeChild(crates[0]);
+                        crates.splice(0,1);
+                        bulletsUp[i].position.set(bulletsUp[i].x,bulletsUp[i].y+1000);
+                        app.stage.removeChild(bulletsUp[i]);
+                        bulletsUp.splice(i,1);
+                        bulletsNumber += 5;
+                        removeBullet.text = bulletsNumber.toString();
+                    }
                 }
+                if(bulletsUp.length > 0)
+                {
+                    if(bulletsUp[i].position.y < 0)
+                    {
+                        app.stage.removeChild(bulletsUp[i]);
+                        bulletsUp.splice(i,1);
+                    }
+                    
+                }
+                
+                
             }
         }
         if(bulletsRight.length >= 1)
@@ -424,17 +500,5 @@ function setup()
             }
         }
 
-    }
-
-    
+    }    
 }
-
-/*function gameLoop(delta)
-{
-    app.ticker.add((delta) => {
-        zombie;
-    });
-}*/
-
-
-
