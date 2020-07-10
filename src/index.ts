@@ -35,20 +35,6 @@ function setup()
 
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
-    /* zombie = PIXI.Sprite.from(zombie1);
-    zombie.scale.x = 0.3;
-    zombie.scale.y = 0.3;
-    zombie.anchor.set(0.5);
-    zombie.position.set(app.view.width - 100,app.view.height/2+170);
-    app.stage.addChild(zombie);
-
-    const zombie3 = PIXI.Sprite.from(zombie1);
-    zombie3.scale.x = 0.3;
-    zombie3.scale.y = 0.3;
-    zombie3.position.set(100,50);
-    zombie3.anchor.set(0.5);
-    zombie3.position.set(app.view.width,app.view.height/2+170);
-    app.stage.addChild(zombie3);*/
 
     var enemies = [];
     var enemiesRight = [];
@@ -86,37 +72,36 @@ function setup()
     function gameLoop()
     {
         var seconds = 0;
+        var spawnerSeconds = 0;
         app.ticker.add((delta) => {
             seconds += delta/50;
+            spawnerSeconds += delta/50;
 
             updateBullets();
-            
-            if(seconds >= 2)
+            if(spawnerSeconds > 1)
             {
-                //zombie.texture = zombie2;
-                seconds = 0;
                 spawnZombie();
+                spawnerSeconds = 0;
             }
-            else
+            if(seconds > 2)
             {
-                //zombie.texture = zombie1;
+                seconds = 0;
             }
             
 
             if(playerAlive)
             {
-                updateZombies();
+                updateZombies(seconds);
                 keyboardInput;
                 
                 for (var j = 0; j < enemies.length; j++)
                 {
-                    if(rectsIntersect(player, enemies[j]))
+                    /*if(rectsIntersect(player, enemies[j]))
                     {
                         app.stage.removeChild(player);
                         playerAlive = false;
-                    }
+                    }*/
                 }
-                
             }
             else
             {
@@ -128,7 +113,7 @@ function setup()
     
     function spawnZombie()
     {
-        if(enemies.length <= 4)
+        if(enemies.length <= 1)
         {
             console.log("SPAWN");
             var enemy = createZombie();
@@ -158,7 +143,7 @@ function setup()
         return enemy;
     }
 
-    function updateZombies()
+    function updateZombies(seconds)
     {
         for(var i = 0; i < enemies.length; i++)
         {
@@ -169,6 +154,14 @@ function setup()
             else
             {
                 enemies[i].x--;
+            }
+            if(seconds <= 2 && seconds >= 1)
+            {
+                enemies[i].texture = zombie2;
+            }
+            if(seconds <= 1)
+            {
+                enemies[i].texture = zombie1;
             }
         }
     }
