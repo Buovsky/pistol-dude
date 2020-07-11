@@ -9,30 +9,14 @@ const app = new PIXI.Application({
 document.body.appendChild(app.view);
 
 const loader = new PIXI.Loader();
-//const resources = PIXI.LoaderResource;
-
 loader.load(setup);
 
 
-
 function setup() 
-{
-    //const app.stage = new PIXI.Container();
-    //app.stage.addChild(app.stage);
-
-    //const gameOverScene = new PIXI.Container();
-    //app.stage.addChild(gameOverScene);
-
-    //gameOverScene.visible = false;
-    
-    
-    console.log("setup");
-    
+{       
     const backgroundTexture = PIXI.Texture.from('assets/background.png');
     const background = PIXI.Sprite.from(backgroundTexture);
     app.stage.addChild(background);
-    console.log("Background:",background.width, background.height);
-
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
 
@@ -231,7 +215,6 @@ function setup()
         }
         if(enemies.length <= enemyNumber)
         {
-            console.log("SPAWN");
             var enemy = createZombie();
             enemies.push(enemy);
         }
@@ -284,8 +267,6 @@ function setup()
 
     function createCrate()
     {
-        console.log("Crate Spawned");
-
         var crate = PIXI.Sprite.from(crateTexture);
         crate.anchor.set(0.5);
         crate.position.set(-30, player.y - 300);
@@ -323,7 +304,6 @@ function setup()
     {
         if(bulletsNumber > 0)
         {
-            console.log("FIRE!");
             var bullet = createBullet();
             if(left)
             {
@@ -368,8 +348,6 @@ function setup()
 
             app.stage.addChild(bullet);
         }
-        console.log("Bullets Left: ", bulletsLeft.length);
-        console.log("Bullets UP: ", bulletsUp.length);
         
         return bullet;
     }
@@ -493,36 +471,27 @@ function setup()
         {
             if(event.keyCode == 37)
             {
-                console.log("Left Arrow pressed!");
                 left = true;
                 up = false;
                 right = false;
                 player.texture = playerLeft;
-                console.log(left);
             }
             if(event.keyCode == 38)
             {
-                console.log("Up Arrow pressed!");
                 up = true
                 left = false;
                 right = false;
-                player.texture = playerUp;
-                console.log(up);
-    
+                player.texture = playerUp;    
             }
             if(event.keyCode == 39)
             {
-                console.log("Right Arrow pressed!");
                 right = true;
                 left = false;
                 up = false;
-                player.texture = playerRight;
-                console.log(right);
-    
+                player.texture = playerRight;    
             }
             if(event.keyCode == 32)
             {
-                console.log("Space pressed!");
                 fireBullet();
             }
         }
