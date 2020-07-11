@@ -11,9 +11,7 @@ document.body.appendChild(app.view);
 const loader = new PIXI.Loader();
 loader.load(setup);
 
-
-function setup() 
-{       
+function setup() {
     const backgroundTexture = PIXI.Texture.from('assets/background.png');
     const background = PIXI.Sprite.from(backgroundTexture);
     app.stage.addChild(background);
@@ -32,7 +30,7 @@ function setup()
     const player = PIXI.Sprite.from(playerLeft);
     player.scale.x = 0.3;
     player.scale.y = 0.3;
-    player.position.set(app.view.width/2,app.view.height/2+170);
+    player.position.set(app.view.width / 2, app.view.height / 2 + 170);
     player.anchor.set(0.5);
     app.stage.addChild(player);
 
@@ -59,168 +57,146 @@ function setup()
     var removeBullet = new PIXI.Text(bulletsNumber.toString());
     drawUI();
     gameLoop();
-    
-    
-    function gameLoop()
-    {
+
+
+    function gameLoop() {
         var seconds = 0;
         var spawnerSeconds = 0;
         var spawnerCrateSeconds = 0;
         var timeToSpawnCrate = 15;
         var endScreen = new PIXI.Text("GAME OVER\nPress  R  to restart!");
         app.ticker.add((delta) => {
-            seconds += delta/50;
-            spawnerSeconds += delta/50;
-            spawnerCrateSeconds += delta/50;
+            seconds += delta / 50;
+            spawnerSeconds += delta / 50;
+            spawnerCrateSeconds += delta / 50;
 
             updateBullets();
-            if(spawnerSeconds > 1)
-            {
+            if (spawnerSeconds > 1) {
                 spawnZombie();
                 spawnerSeconds = 0;
             }
-            if(seconds > 2)
-            {
+            if (seconds > 2) {
                 seconds = 0;
-                
+
             }
-            if(spawnerCrateSeconds > timeToSpawnCrate)
-            {
-                if(playerAlive)
-                {
+            if (spawnerCrateSeconds > timeToSpawnCrate) {
+                if (playerAlive) {
                     createCrate();
-                    if(scorePoints > 100)
-                    {
+                    if (scorePoints > 100) {
                         timeToSpawnCrate = 6;
                     }
                     spawnerCrateSeconds = 0;
                 }
-                
             }
-            
 
-            if(playerAlive)
-            {
-                
+            if (playerAlive) {
+
                 updateZombies(seconds);
                 updateCrate(seconds);
                 keyboardInput;
-                
-                for (var j = 0; j < enemies.length; j++)
-                {
-                    if(rectsIntersect(player, enemies[j]))
-                    {
+
+                for (var j = 0; j < enemies.length; j++) {
+                    if (rectsIntersect(player, enemies[j])) {
                         app.stage.removeChild(player);
                         playerAlive = false;
                     }
                 }
             }
-            else
-            {
+            else {
                 drawEndScreen(endScreen);
             }
-            
+
         });
     }
 
     // Drawing UI
 
-    function drawUI()
-    {
+    function drawUI() {
         var score = new PIXI.Text("SCORE: ");
-        score.position.set(80,30);
+        score.position.set(80, 30);
         score.anchor.set(0.5);
         score.style = new PIXI.TextStyle({
             fill: 0xFFFFFF,
             fontFamily: "Ardcade",
-            fontSize:35,
+            fontSize: 35,
             strokeThickness: 5,
             letterSpacing: 2
-            
+
         });
         app.stage.addChild(score);
 
-        addScore.position.set(160,30);
+        addScore.position.set(160, 30);
         addScore.anchor.set(0.5);
         addScore.style = new PIXI.TextStyle({
             fill: 0xFFFFFF,
             fontFamily: "Ardcade",
-            fontSize:35,
+            fontSize: 35,
             strokeThickness: 5,
             letterSpacing: 2
         });
         app.stage.addChild(addScore);
-        
+
         var bulletAmount = new PIXI.Text("BULLETS: ");
-        bulletAmount.position.set(705,30);
+        bulletAmount.position.set(705, 30);
         bulletAmount.anchor.set(0.5);
         bulletAmount.style = new PIXI.TextStyle({
             fill: 0xFFFFFF,
             fontFamily: "Ardcade",
-            fontSize:35,
+            fontSize: 35,
             strokeThickness: 5,
             letterSpacing: 1
         });
         app.stage.addChild(bulletAmount);
-        removeBullet.position.set(810,30);
+        removeBullet.position.set(810, 30);
         removeBullet.anchor.set(0.5);
         removeBullet.style = new PIXI.TextStyle({
             fill: 0xFFFFFF,
             fontFamily: "Ardcade",
-            fontSize:35,
+            fontSize: 35,
             strokeThickness: 5,
             letterSpacing: 1
         });
         app.stage.addChild(removeBullet);
     }
-    function drawEndScreen(endScreen)
-    {
-        endScreen.position.set(app.stage.width/2,app.stage.height/2);
+    function drawEndScreen(endScreen) {
+        endScreen.position.set(app.stage.width / 2, app.stage.height / 2);
         endScreen.anchor.set(0.5);
         endScreen.style = new PIXI.TextStyle({
             fill: 0xFFFFFF,
             fontFamily: "Ardcade",
-            fontSize:40,
+            fontSize: 40,
             strokeThickness: 5,
             letterSpacing: 2
-            
+
         });
         app.stage.addChild(endScreen);
-        
+
     }
-    function scorePosition()
-    {
-        if(scorePoints >= 100)
-        {
+    function scorePosition() {
+        if (scorePoints >= 100) {
             addScore.x = 170;
         }
-        if(scorePoints >= 1000)
-        {
+        if (scorePoints >= 1000) {
             addScore.x = 180;
         }
     }
 
     // Spawning enemies
 
-    function spawnZombie()
-    {
+    function spawnZombie() {
         var enemyNumber = 1;
-        if(scorePoints > 100)
-        {
+        if (scorePoints > 100) {
             enemyNumber = 3;
         }
-        if(scorePoints > 300)
-        {
+        if (scorePoints > 300) {
             enemyNumber = 5;
         }
-        if(enemies.length <= enemyNumber)
-        {
+        if (enemies.length <= enemyNumber) {
             var enemy = createZombie();
             enemies.push(enemy);
         }
     }
-    function createZombie()
-    {
+    function createZombie(): PIXI.Sprite {
         var enemy = PIXI.Sprite.from(zombie1);
         enemy.anchor.set(0.5);
         enemy.scale.x = 0.3;
@@ -228,13 +204,11 @@ function setup()
 
         var random = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
 
-        if(random == 1)
-        {
+        if (random == 1) {
             enemy.position.set(-30, player.y);
             app.stage.addChild(enemy);
         }
-        else
-        {
+        else {
             enemy.position.set(884, player.y);
             app.stage.addChild(enemy);
         }
@@ -242,31 +216,24 @@ function setup()
         return enemy;
     }
 
-    function updateZombies(seconds)
-    {
-        for(var i = 0; i < enemies.length; i++)
-        {
-            if(enemies[i].x < player.x)
-            {
+    function updateZombies(seconds: number) {
+        for (var i = 0; i < enemies.length; i++) {
+            if (enemies[i].x < player.x) {
                 enemies[i].x++;
             }
-            else
-            {
+            else {
                 enemies[i].x--;
             }
-            if(seconds <= 2 && seconds >= 1)
-            {
+            if (seconds <= 2 && seconds >= 1) {
                 enemies[i].texture = zombie2;
             }
-            if(seconds <= 1)
-            {
+            if (seconds <= 1) {
                 enemies[i].texture = zombie1;
             }
         }
     }
 
-    function createCrate()
-    {
+    function createCrate() {
         var crate = PIXI.Sprite.from(crateTexture);
         crate.anchor.set(0.5);
         crate.position.set(-30, player.y - 300);
@@ -274,25 +241,21 @@ function setup()
         crate.scale.y = 0.8;
         app.stage.addChild(crate);
         crates.push(crate);
-    } 
-    function updateCrate(seconds)
-    {
-        if(crates[0])
-        {
-            if(seconds <= 2 && seconds >= 1)
-            {
+    }
+
+    function updateCrate(seconds: number) {
+        if (crates[0]) {
+            if (seconds <= 2 && seconds >= 1) {
                 crates[0].x += crateSpeed;
                 crates[0].y -= crateSpeed;
             }
-            if(seconds <= 1)
-            { 
+            if (seconds <= 1) {
                 crates[0].x += crateSpeed;
                 crates[0].y += crateSpeed;
             }
-            if(crates[0].position.x > 854)
-            {
+            if (crates[0].position.x > 854) {
                 app.stage.removeChild(crates[0]);
-                crates.splice(0,1);
+                crates.splice(0, 1);
             }
         }
     }
@@ -300,21 +263,16 @@ function setup()
 
     //Bullet functionality 
 
-    function fireBullet()
-    {
-        if(bulletsNumber > 0)
-        {
+    function fireBullet() {
+        if (bulletsNumber > 0) {
             var bullet = createBullet();
-            if(left)
-            {
+            if (left) {
                 bulletsLeft.push(bullet);
             }
-            if(up)
-            {
+            if (up) {
                 bulletsUp.push(bullet);
             }
-            if(right)
-            {
+            if (right) {
                 bulletsRight.push(bullet);
             }
             bulletsNumber--;
@@ -322,185 +280,152 @@ function setup()
         }
     }
 
-    function createBullet()
-    {
+    function createBullet(): PIXI.Sprite {
         const bullet = PIXI.Sprite.from(bulletTexture);
         bullet.anchor.set(0.5);
-        if(left)
-        {
+        if (left) {
             bullet.x = player.x - 27;
             bullet.y = player.y - 11;
 
             app.stage.addChild(bullet);
         }
-        if(up)
-        {
+        if (up) {
             bullet.x = player.x;
-            bullet.y = player.y -  40;
+            bullet.y = player.y - 40;
             bullet.angle = 90;
 
             app.stage.addChild(bullet);
         }
-        if(right)
-        {
+        if (right) {
             bullet.x = player.x + 27;
             bullet.y = player.y - 11;
 
             app.stage.addChild(bullet);
         }
-        
+
         return bullet;
     }
 
-    function updateBullets()
-    {
-        if(bulletsLeft.length >= 1)
-        {
-            for (var i = 0; i < bulletsLeft.length; i++)
-            {
+    function updateBullets() {
+        if (bulletsLeft.length >= 1) {
+            for (var i = 0; i < bulletsLeft.length; i++) {
                 bulletsLeft[i].position.x -= bulletSpeed;
 
-                for (var j = 0; j < enemies.length; j++)
-                {
-                    if(rectsIntersect(bulletsLeft[i], enemies[j]))
-                    {
-                        enemies[j].position.set(enemies[j].x,enemies[j].y+1000)
+                for (var j = 0; j < enemies.length; j++) {
+                    if (rectsIntersect(bulletsLeft[i], enemies[j])) {
+                        enemies[j].position.set(enemies[j].x, enemies[j].y + 1000)
                         app.stage.removeChild(enemies[j]);
-                        enemies.splice(j,1);
+                        enemies.splice(j, 1);
                         app.stage.removeChild(bulletsLeft[i]);
-                        bulletsLeft[i].position.set(bulletsLeft[i].x , bulletsLeft[i].y+1000);
+                        bulletsLeft[i].position.set(bulletsLeft[i].x, bulletsLeft[i].y + 1000);
                         scorePoints += 10;
                         addScore.text = scorePoints.toString();
                         scorePosition();
                     }
                 }
 
-                if(bulletsLeft[i].position.x < 0)
-                {
+                if (bulletsLeft[i].position.x < 0) {
                     app.stage.removeChild(bulletsLeft[i]);
-                    bulletsLeft.splice(i,1);
+                    bulletsLeft.splice(i, 1);
                 }
             }
         }
-        if(bulletsUp.length >= 1)
-        {
-            for (var i = 0; i < bulletsUp.length; i++)
-            {
+        if (bulletsUp.length >= 1) {
+            for (var i = 0; i < bulletsUp.length; i++) {
                 bulletsUp[i].position.y -= bulletSpeed;
-                if(crates[0])
-                {
-                    if(rectsIntersect(bulletsUp[i],crates[0]))
-                    {
-                        crates[0].position.set(crates[0].x,crates[0].y+1000);
+                if (crates[0]) {
+                    if (rectsIntersect(bulletsUp[i], crates[0])) {
+                        crates[0].position.set(crates[0].x, crates[0].y + 1000);
                         app.stage.removeChild(crates[0]);
-                        crates.splice(0,1);
-                        bulletsUp[i].position.set(bulletsUp[i].x,bulletsUp[i].y+1000);
+                        crates.splice(0, 1);
+                        bulletsUp[i].position.set(bulletsUp[i].x, bulletsUp[i].y + 1000);
                         app.stage.removeChild(bulletsUp[i]);
-                        bulletsUp.splice(i,1);
+                        bulletsUp.splice(i, 1);
                         bulletsNumber += 5;
                         removeBullet.text = bulletsNumber.toString();
                     }
                 }
-                if(bulletsUp.length > 0)
-                {
-                    if(bulletsUp[i].position.y < 0)
-                    {
+                if (bulletsUp.length > 0) {
+                    if (bulletsUp[i].position.y < 0) {
                         app.stage.removeChild(bulletsUp[i]);
-                        bulletsUp.splice(i,1);
+                        bulletsUp.splice(i, 1);
                     }
-                    
+
                 }
-                
+
             }
         }
-        if(bulletsRight.length >= 1)
-        {
-            for (var i = 0; i < bulletsRight.length; i++)
-            {
+        if (bulletsRight.length >= 1) {
+            for (var i = 0; i < bulletsRight.length; i++) {
                 bulletsRight[i].position.x += bulletSpeed;
-                
-                for (var j = 0; j < enemies.length; j++)
-                {
-                    if(rectsIntersect(bulletsRight[i], enemies[j]))
-                    {
-                        enemies[j].position.set(enemies[j].x,enemies[j].y+1000)
+
+                for (var j = 0; j < enemies.length; j++) {
+                    if (rectsIntersect(bulletsRight[i], enemies[j])) {
+                        enemies[j].position.set(enemies[j].x, enemies[j].y + 1000)
                         app.stage.removeChild(enemies[j]);
-                        enemies.splice(j,1);
+                        enemies.splice(j, 1);
                         app.stage.removeChild(bulletsRight[i]);
-                        bulletsRight[i].position.set(bulletsRight[i].x , bulletsRight[i].y+1000);
+                        bulletsRight[i].position.set(bulletsRight[i].x, bulletsRight[i].y + 1000);
                         scorePoints += 10;
                         addScore.text = scorePoints.toString();
                         scorePosition();
                     }
                 }
-                if(bulletsRight[i].position.x > 854)
-                {
+                if (bulletsRight[i].position.x > 854) {
                     app.stage.removeChild(bulletsRight[i]);
-                    bulletsRight.splice(i,1);
-                 }
+                    bulletsRight.splice(i, 1);
+                }
             }
         }
-        
     }
 
     //Collision detection
 
-    function rectsIntersect(a,b)
-    {
+    function rectsIntersect(a: PIXI.Sprite, b: PIXI.Sprite): boolean {
         const aBox = a.getBounds();
         const bBox = b.getBounds();
 
-        if(a.getBounds == null || b.getBounds  == null)
-        {
-            return 0;
+        if (a.getBounds == null || b.getBounds == null) {
+            return false;
         }
-        else
-        {
+        else {
             return aBox.x + aBox.width > bBox.x &&
-               aBox.x < bBox.x + bBox.width &&
-               aBox.y + aBox.height > bBox.y &&
-               aBox.y < bBox.y + bBox.height;
+                aBox.x < bBox.x + bBox.width &&
+                aBox.y + aBox.height > bBox.y &&
+                aBox.y < bBox.y + bBox.height;
         }
     }
 
     //Capture the keyboard arrow keys
 
-    function keyboardInput(event: KeyboardEvent)
-    {
-        if(playerAlive)
-        {
-            if(event.keyCode == 37)
-            {
+    function keyboardInput(event: KeyboardEvent) {
+        if (playerAlive) {
+            if (event.keyCode == 37) {
                 left = true;
                 up = false;
                 right = false;
                 player.texture = playerLeft;
             }
-            if(event.keyCode == 38)
-            {
+            if (event.keyCode == 38) {
                 up = true
                 left = false;
                 right = false;
-                player.texture = playerUp;    
+                player.texture = playerUp;
             }
-            if(event.keyCode == 39)
-            {
+            if (event.keyCode == 39) {
                 right = true;
                 left = false;
                 up = false;
-                player.texture = playerRight;    
+                player.texture = playerRight;
             }
-            if(event.keyCode == 32)
-            {
+            if (event.keyCode == 32) {
                 fireBullet();
             }
         }
-        else
-        {
-            if(event.keyCode == 82)
-            {
+        else {
+            if (event.keyCode == 82) {
                 window.location.reload(true);
             }
         }
-    }    
+    }
 }
