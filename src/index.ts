@@ -76,12 +76,14 @@ function setup()
     drawUI();
     gameLoop();
     
+    
     function gameLoop()
     {
         var seconds = 0;
         var spawnerSeconds = 0;
         var spawnerCrateSeconds = 0;
         var timeToSpawnCrate = 15;
+        var endScreen = new PIXI.Text("GAME OVER\nPress  R  to restart!");
         app.ticker.add((delta) => {
             seconds += delta/50;
             spawnerSeconds += delta/50;
@@ -100,12 +102,16 @@ function setup()
             }
             if(spawnerCrateSeconds > timeToSpawnCrate)
             {
-                createCrate();
-                if(scorePoints > 100)
+                if(playerAlive)
                 {
-                    timeToSpawnCrate = 6;
+                    createCrate();
+                    if(scorePoints > 100)
+                    {
+                        timeToSpawnCrate = 6;
+                    }
+                    spawnerCrateSeconds = 0;
                 }
-                spawnerCrateSeconds = 0;
+                
             }
             
 
@@ -118,16 +124,16 @@ function setup()
                 
                 for (var j = 0; j < enemies.length; j++)
                 {
-                    /*if(rectsIntersect(player, enemies[j]))
+                    if(rectsIntersect(player, enemies[j]))
                     {
                         app.stage.removeChild(player);
                         playerAlive = false;
-                    }*/
+                    }
                 }
             }
             else
             {
-                
+                drawEndScreen(endScreen);
             }
             
         });
@@ -182,6 +188,21 @@ function setup()
             letterSpacing: 1
         });
         app.stage.addChild(removeBullet);
+    }
+    function drawEndScreen(endScreen)
+    {
+        endScreen.position.set(app.stage.width/2,app.stage.height/2);
+        endScreen.anchor.set(0.5);
+        endScreen.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontFamily: "Ardcade",
+            fontSize:40,
+            strokeThickness: 5,
+            letterSpacing: 2
+            
+        });
+        app.stage.addChild(endScreen);
+        
     }
     function scorePosition()
     {
@@ -505,6 +526,12 @@ function setup()
                 fireBullet();
             }
         }
-
+        else
+        {
+            if(event.keyCode == 82)
+            {
+                window.location.reload(true);
+            }
+        }
     }    
 }
