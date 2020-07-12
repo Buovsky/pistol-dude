@@ -18,10 +18,10 @@ function setup() {
     const zombie1 = PIXI.Texture.from('assets/zombie1.png');
     const zombie2 = PIXI.Texture.from('assets/zombie2.png');
 
-    var enemies = [];
+    const enemies = [];
 
     const crateTexture = PIXI.Texture.from('assets/crate.png');
-    var crates = [];
+    const crates = [];
     const crateSpeed = 1;
 
     const playerLeft = PIXI.Texture.from('assets/playerLeft.png');
@@ -34,37 +34,36 @@ function setup() {
     player.anchor.set(0.5);
     app.stage.addChild(player);
 
-    var playerAlive = true;
+    let playerAlive = true;
 
     const bulletTexture = PIXI.Texture.from("assets/bullet.png");
-    var bulletsNumber = 10;
+    let bulletsNumber = 10;
     const bulletSpeed = 4;
 
-    var bulletsLeft = [];
-    var bulletsUp = [];
-    var bulletsRight = [];
+    let bulletsLeft = [];
+    let bulletsUp = [];
+    let bulletsRight = [];
 
-    // Keyboard variables
-    var left = true;
-    var up = false;
-    var right = false;
+    // Keyboard letiables
+    let left = true;
+    let up = false;
+    let right = false;
 
-    var scorePoints = 0;
+    let scorePoints = 0;
 
     window.addEventListener('keydown', keyboardInput);
 
-    var addScore = new PIXI.Text(scorePoints.toString());
-    var removeBullet = new PIXI.Text(bulletsNumber.toString());
+    let addScore = new PIXI.Text(scorePoints.toString());
+    let removeBullet = new PIXI.Text(bulletsNumber.toString());
     drawUI();
     gameLoop();
 
-
     function gameLoop() {
-        var seconds = 0;
-        var spawnerSeconds = 0;
-        var spawnerCrateSeconds = 0;
-        var timeToSpawnCrate = 15;
-        var endScreen = new PIXI.Text("GAME OVER\nPress  R  to restart!");
+        let seconds = 0;
+        let spawnerSeconds = 0;
+        let spawnerCrateSeconds = 0;
+        let timeToSpawnCrate = 15;
+        let endScreen = new PIXI.Text("GAME OVER\nPress  R  to restart!");
         app.ticker.add((delta) => {
             seconds += delta / 50;
             spawnerSeconds += delta / 50;
@@ -95,7 +94,7 @@ function setup() {
                 updateCrate(seconds);
                 keyboardInput;
 
-                for (var j = 0; j < enemies.length; j++) {
+                for (let j = 0; j < enemies.length; j++) {
                     if (rectsIntersect(player, enemies[j])) {
                         app.stage.removeChild(player);
                         playerAlive = false;
@@ -112,7 +111,7 @@ function setup() {
     // Drawing UI
 
     function drawUI() {
-        var score = new PIXI.Text("SCORE: ");
+        let score = new PIXI.Text("SCORE: ");
         score.position.set(80, 30);
         score.anchor.set(0.5);
         score.style = new PIXI.TextStyle({
@@ -136,7 +135,7 @@ function setup() {
         });
         app.stage.addChild(addScore);
 
-        var bulletAmount = new PIXI.Text("BULLETS: ");
+        let bulletAmount = new PIXI.Text("BULLETS: ");
         bulletAmount.position.set(705, 30);
         bulletAmount.anchor.set(0.5);
         bulletAmount.style = new PIXI.TextStyle({
@@ -184,7 +183,7 @@ function setup() {
     // Spawning enemies
 
     function spawnZombie() {
-        var enemyNumber = 1;
+        let enemyNumber = 1;
         if (scorePoints > 100) {
             enemyNumber = 3;
         }
@@ -192,17 +191,17 @@ function setup() {
             enemyNumber = 5;
         }
         if (enemies.length <= enemyNumber) {
-            var enemy = createZombie();
+            let enemy = createZombie();
             enemies.push(enemy);
         }
     }
     function createZombie(): PIXI.Sprite {
-        var enemy = PIXI.Sprite.from(zombie1);
+        let enemy = PIXI.Sprite.from(zombie1);
         enemy.anchor.set(0.5);
         enemy.scale.x = 0.3;
         enemy.scale.y = 0.3;
 
-        var random = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
+        let random = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
 
         if (random == 1) {
             enemy.position.set(-30, player.y);
@@ -217,7 +216,7 @@ function setup() {
     }
 
     function updateZombies(seconds: number) {
-        for (var i = 0; i < enemies.length; i++) {
+        for (let i = 0; i < enemies.length; i++) {
             if (enemies[i].x < player.x) {
                 enemies[i].x++;
             }
@@ -234,7 +233,7 @@ function setup() {
     }
 
     function createCrate() {
-        var crate = PIXI.Sprite.from(crateTexture);
+        let crate = PIXI.Sprite.from(crateTexture);
         crate.anchor.set(0.5);
         crate.position.set(-30, player.y - 300);
         crate.scale.x = 0.8;
@@ -265,7 +264,7 @@ function setup() {
 
     function fireBullet() {
         if (bulletsNumber > 0) {
-            var bullet = createBullet();
+            let bullet = createBullet();
             if (left) {
                 bulletsLeft.push(bullet);
             }
@@ -308,10 +307,10 @@ function setup() {
 
     function updateBullets() {
         if (bulletsLeft.length >= 1) {
-            for (var i = 0; i < bulletsLeft.length; i++) {
+            for (let i = 0; i < bulletsLeft.length; i++) {
                 bulletsLeft[i].position.x -= bulletSpeed;
 
-                for (var j = 0; j < enemies.length; j++) {
+                for (let j = 0; j < enemies.length; j++) {
                     if (rectsIntersect(bulletsLeft[i], enemies[j])) {
                         enemies[j].position.set(enemies[j].x, enemies[j].y + 1000)
                         app.stage.removeChild(enemies[j]);
@@ -331,7 +330,7 @@ function setup() {
             }
         }
         if (bulletsUp.length >= 1) {
-            for (var i = 0; i < bulletsUp.length; i++) {
+            for (let i = 0; i < bulletsUp.length; i++) {
                 bulletsUp[i].position.y -= bulletSpeed;
                 if (crates[0]) {
                     if (rectsIntersect(bulletsUp[i], crates[0])) {
@@ -356,10 +355,10 @@ function setup() {
             }
         }
         if (bulletsRight.length >= 1) {
-            for (var i = 0; i < bulletsRight.length; i++) {
+            for (let i = 0; i < bulletsRight.length; i++) {
                 bulletsRight[i].position.x += bulletSpeed;
 
-                for (var j = 0; j < enemies.length; j++) {
+                for (let j = 0; j < enemies.length; j++) {
                     if (rectsIntersect(bulletsRight[i], enemies[j])) {
                         enemies[j].position.set(enemies[j].x, enemies[j].y + 1000)
                         app.stage.removeChild(enemies[j]);
