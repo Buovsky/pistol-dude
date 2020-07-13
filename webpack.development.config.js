@@ -6,22 +6,22 @@ module.exports = {
         port: 8080,
     },
     resolve: {
-      extensions: [".ts", ".js", ".json"]
+        extensions: [".ts", ".js", ".json"]
     },
     module: {
         rules: [{
-          test: /\.ts(x?)$/,
-          exclude: /node_modules/,
-          use: [{
-            loader: "ts-loader"
-          }]
+            test: /\.ts(x?)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: "ts-loader"
+            }]
         }, {
-          enforce: "pre",
-          test: /\.js$/,
-          loader: "source-map-loader"
+            enforce: "pre",
+            test: /\.js$/,
+            loader: "source-map-loader"
         }]
-      },
-      externals: {
+    },
+    externals: {
         "pixi.js": "PIXI"
-      }
+    }
 }
